@@ -1,26 +1,6 @@
 @extends('layouts.app')
 @section('customcss')
     <style>
-        /* canvas {
-            border: 2px solid #ddd;
-            background-color:#eee;
-        }
-        #container {
-            border: 2px solid #ccc;
-            text-align:center;
-            position:relative;
-            padding:20px;
-        }
-
-        #inner_container{
-            position:relative;
-        }
-        #hover-canvas {
-            z-index: 1;
-        }
-        #pdf-renderer {
-            position:absolute; z-index: 0;
-        } */
     </style>
 @endsection
 @section('content')
@@ -33,26 +13,72 @@
         <button type="button" class="btn btn-primary" id="next">Next</button>
     </div>
     <br>
+    <button type="button" class="btn btn-primary mb-5" id="btnDraw">Draw Rectangle</button>
+    <br>
     <div class="form-row text-center">
-        <div class="form-group col-lg-12">
-            <canvas id="pdf-renderer"></canvas>
+        <div class="form-group col-lg-12" style="">
+            <div class="form-row text-center mb-5">
+                <div class="form-group col-lg-12" style="position: relative">
+                    <canvas id="pdf-renderer"
+                    style="position: absolute; left: 0; top: 0; z-index: 0;
+                    margin-left: auto;
+                    margin-right: auto;
+                    right: 0;
+                    text-align: center;"></canvas>
+                    <canvas id="canvas-hover"
+                    style="position: absolute; left: 0; top: 0; z-index: 1; border: 1px solid blue;
+                    margin-left: auto;
+                    margin-right: auto;
+                    right: 0;
+                    text-align: center;"></canvas>
+                </div>
+            </div>
         </div>
     </div>
-    {{-- <div id="container">
-        <div id="inner_container">
 
-            <canvas id="hover-canvas" style="border:2px solid #000000;"></canvas>
-        </div>
-    </div> --}}
+    <br>
+    <br>
+
 
 </div>
 
 @endsection
 
 @section('customjs')
+    <script src="https://code.createjs.com/1.0.0/createjs.min.js"></script>
     <script src="https://mozilla.github.io/pdf.js/build/pdf.js"></script>
     <script>
         $(document).ready(function(){
+            stage = new createjs.Stage("canvas-hover");
+            var SIZE = 50;
+            $('#btnDraw').click(function(){
+                addCircle(canvas.width/2 - (SIZE * 2.5), canvas.height/2, SIZE, "#e74c3c");
+                stage.update();
+
+            });
+            function addCircle(x, y, r, fill) {
+                var circle = new createjs.Shape();
+                circle.graphics.beginFill(fill).drawCircle(0, 0, r);
+                circle.x = x;
+                circle.y = y;
+                circle.name = "circle";
+                circle.on("pressmove",drag);
+                stage.addChild(circle);
+            }
+            function drag(evt) {
+                // target will be the container that the event listener was added to
+                if(evt.target.name == "square") {
+                    evt.target.x = evt.stageX - SIZE;
+                    evt.target.y = evt.stageY - SIZE;
+                }
+                else  {
+                    evt.target.x = evt.stageX;
+                    evt.target.y = evt.stageY;
+                }
+
+                // make sure to redraw the stage to show the change
+                stage.update();
+            }
             var url = "{{ route('document.display',['document'=>$document->id]) }}";
 
             // Loaded via <script> tag, create shortcut to access PDF.js exports.
@@ -67,7 +93,9 @@
                 pageNumPending = null,
                 scale = 1.5,
                 canvas = document.getElementById('pdf-renderer'),
-                ctx = canvas.getContext('2d');
+                ctx = canvas.getContext('2d'),
+                canvasHover = document.getElementById('canvas-hover'),
+                ctxHover = canvasHover.getContext('2d');
 
             /**
              * Get page info from document, resize canvas accordingly, and render page.
@@ -80,6 +108,9 @@
                     var viewport = page.getViewport({scale: scale});
                     canvas.height = viewport.height;
                     canvas.width = viewport.width;
+
+                    canvasHover.height = viewport.height;
+                    canvasHover.width = viewport.width;
 
                     // Render PDF page into canvas context
                     var renderContext = {
@@ -151,12 +182,15 @@
             });
 
 
-            $("#pdf-renderer").on('mousemove', function(e) {
-                var mousex = parseInt(e.clientX-canvas.getBoundingClientRect().left);
-                var mousey = parseInt(e.clientY-canvas.getBoundingClientRect().top);
-                $('#x-val').html(mousex)
-                $('#y-val').html(mousey)
-            });
+            // $("#pdf-renderer").on('mousemove', function(e) {
+            //     var mousex = parseInt(e.clientX-canvas.getBoundingClientRect().left);
+            //     var mousey = parseInt(e.clientY-canvas.getBoundingClientRect().top);
+            //     $('#x-val').html(mousex)
+            //     $('#y-val').html(mousey)
+            // });
+
+
+
 
 
         });
