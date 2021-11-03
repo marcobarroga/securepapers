@@ -9,15 +9,13 @@
 
     <title>{{ config('app.name', 'Laravel') }}</title>
 
-    <!-- Scripts -->
-    <script src="{{ asset('js/app.js') }}" defer></script>
-
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    @yield('customcss')
 </head>
 <body>
     <div id="app">
@@ -33,7 +31,15 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav mr-auto">
-
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="documentsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Documents Management
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="documentsDropdown">
+                                <a class="dropdown-item" href="{{ route('user.docs') }}">Documents</a>
+                                <a class="dropdown-item" href="{{ route('docs.register') }}">Register</a>
+                            </div>
+                        </li>
                     </ul>
 
                     <!-- Right Side Of Navbar -->
@@ -79,5 +85,8 @@
             @yield('content')
         </main>
     </div>
+    <!-- Scripts -->
+    <script src="{{ asset('js/app.js') }}"></script>
+    @yield('customjs')
 </body>
 </html>

@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\DocumentController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -20,3 +21,15 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/documents/my',[DocumentController::class,'userDocs'])->name('user.docs');
+    Route::get('/documents/register',[DocumentController::class,'registerDocument'])->name('docs.register');
+    Route::post('/documents/register',[DocumentController::class,'storeDocument'])->name('docs.store');
+    Route::get('/documents/user',[DocumentController::class,'listUserDocs'])->name('user.docs.list');
+    Route::get('/documents/{document}/manage',[DocumentController::class,'manageDocument'])->name('user.manage.document');
+    Route::get('/documents/{document}/display',[DocumentController::class,'displayDocument'])->name('document.display');
+
+});
+
+
