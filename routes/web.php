@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\DocumentController;
+use App\Http\Controllers\QrCodeController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -29,6 +30,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/documents/user',[DocumentController::class,'listUserDocs'])->name('user.docs.list');
     Route::get('/documents/{document}/manage',[DocumentController::class,'manageDocument'])->name('user.manage.document');
     Route::get('/documents/{document}/display',[DocumentController::class,'displayDocument'])->name('document.display');
+
+    // Create QR Code
+    // Route::get('/qr/code/sign/retrieve',[QrCodeController::class,'retrieve'])->name('qr.code.retrieve');
 
 });
 

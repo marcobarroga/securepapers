@@ -49,13 +49,42 @@
     <script src="https://mozilla.github.io/pdf.js/build/pdf.js"></script>
     <script>
         $(document).ready(function(){
+            var allShapes = [];
             stage = new createjs.Stage("canvas-hover");
             var SIZE = 50;
+            var square = null;
+
             $('#btnDraw').click(function(){
-                addCircle(canvas.width/2 - (SIZE * 2.5), canvas.height/2, SIZE, "#e74c3c");
-                stage.update();
+                // addCircle(canvas.width/2 - (SIZE * 2.5), canvas.height/2, SIZE, "#e74c3c");
+                if(square === null){
+                    addRoundedSquare(canvas.width/2 + (SIZE * 2.5), canvas.height/2, SIZE * 2, 5, "#757061");
+                    stage.update();
+                }else{
+                    return;
+                }
+
+
 
             });
+            function addRoundedSquare(x, y, s, r, fill) {
+                square = new createjs.Shape();
+                square.graphics.beginFill(fill).drawRoundRect(0, 0, s, s, r);
+                square.x = x - s/2;
+                square.y = y - s/2;
+                square.name = "square";
+                square.on("pressmove",drag);
+                stage.addChild(square);
+            }
+            /*function initRectangle(){
+                rect = new createjs.Rectangle(0, 0, 200, 200);
+                rect.on("pressmove",drag);
+                stage.addChild(rect);
+                stage.update();
+
+            }*/
+            function addQrSpace(){
+
+            }
             function addCircle(x, y, r, fill) {
                 var circle = new createjs.Shape();
                 circle.graphics.beginFill(fill).drawCircle(0, 0, r);
@@ -102,6 +131,9 @@
              * @param num Page number.
              */
             function renderPage(num) {
+                stage.removeChild(square);
+                square = null;
+                ctxHover.clearRect(0, 0, canvas.width, canvas.height);
                 pageRendering = true;
                 // Using promise to fetch the page
                 pdfDoc.getPage(num).then(function(page) {
