@@ -19,6 +19,7 @@ class CreateStampTable extends Migration
             $table->unsignedBigInteger('user_id');
             $table->double('x_coordinate');
             $table->double('y_coordinate');
+            $table->integer('page_number');
             $table->timestamps();
         });
     }
