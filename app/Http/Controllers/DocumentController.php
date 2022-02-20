@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Document;
+use App\Models\Stamp;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
@@ -22,7 +23,7 @@ class DocumentController extends Controller
         ];
         $niceNames = [
             'file_description'=>'File Description',
-            'pdf_file'=>'required|mimes:pdf|max:10000'
+            'pdf_file'=>'Document'
         ];
 
         $validator = Validator::make($request->all(),$rules,[],$niceNames);
@@ -73,5 +74,33 @@ class DocumentController extends Controller
     public function displayDocument(Document $document){
         $pathToFile = $document->file_name;
         return response()->file(storage_path('app'.DIRECTORY_SEPARATOR.($pathToFile)));
+    }
+
+    public function addStamp(Document $document,Request $request){
+        $rules = [
+            'x_coordinate'=>'required',
+            'y_coordinate'=>'required',
+            'page_number'=>'required'
+        ];
+        $niceNames = [
+            'x_coordinate'=>'required',
+            'y_coordinate'=>'required',
+            'page_number'=>'required'
+        ];
+        $validator = Validator::make($request->all(),$rules,[],$niceNames);
+        if(!$validator->fails()){
+            $stamp = new Stamp();
+            $stamp->fileRefId = $document->id;
+            $stamp->user_id = Auth::user()->id;
+            $stamp->x_coordinate = $request->input('x_coordinate');
+            $stamp->y_coordinate = $request->input('y_coordinate');
+            $stamp->page_number = $request->input('page_number');
+            $stamp->save();
+
+            return response()->json(['success' => true], 200);
+
+        }else{
+            return response()->json($validator->errors(), 422);
+        }
     }
 }

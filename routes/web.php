@@ -30,10 +30,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/documents/user',[DocumentController::class,'listUserDocs'])->name('user.docs.list');
     Route::get('/documents/{document}/manage',[DocumentController::class,'manageDocument'])->name('user.manage.document');
     Route::get('/documents/{document}/display',[DocumentController::class,'displayDocument'])->name('document.display');
-
-    // Create QR Code
-    // Route::get('/qr/code/sign/retrieve',[QrCodeController::class,'retrieve'])->name('qr.code.retrieve');
-
+    Route::post('/documents/{document}/add/stamp',[DocumentController::class,'addStamp'])->name('document.add.stamp');
 });
 
 

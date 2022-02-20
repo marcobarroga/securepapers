@@ -14,6 +14,7 @@
     </div>
     <br>
     <button type="button" class="btn btn-primary mb-5" id="btnDraw">Draw Rectangle</button>
+    <button type="button" class="btn btn-primary mb-5" id="btnAddStamp">Add Stamp</button>
     <br>
     <div class="form-row text-center">
         <div class="form-group col-lg-12" style="">
@@ -49,6 +50,13 @@
     <script src="https://mozilla.github.io/pdf.js/build/pdf.js"></script>
     <script>
         $(document).ready(function(){
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+            var xCoordinate;
+            var yCoordinate;
             var allShapes = [];
             stage = new createjs.Stage("canvas-hover");
             var SIZE = 50;
@@ -85,15 +93,15 @@
             function addQrSpace(){
 
             }
-            function addCircle(x, y, r, fill) {
-                var circle = new createjs.Shape();
-                circle.graphics.beginFill(fill).drawCircle(0, 0, r);
-                circle.x = x;
-                circle.y = y;
-                circle.name = "circle";
-                circle.on("pressmove",drag);
-                stage.addChild(circle);
-            }
+            // function addCircle(x, y, r, fill) {
+            //     var circle = new createjs.Shape();
+            //     circle.graphics.beginFill(fill).drawCircle(0, 0, r);
+            //     circle.x = x;
+            //     circle.y = y;
+            //     circle.name = "circle";
+            //     circle.on("pressmove",drag);
+            //     stage.addChild(circle);
+            // }
             function drag(evt) {
                 // target will be the container that the event listener was added to
                 if(evt.target.name == "square") {
@@ -104,7 +112,8 @@
                     evt.target.x = evt.stageX;
                     evt.target.y = evt.stageY;
                 }
-
+                xCoordinate = evt.target.x;
+                yCoordinate = evt.target.y;
                 // make sure to redraw the stage to show the change
                 stage.update();
             }
@@ -212,6 +221,25 @@
             // Initial/first page rendering
             renderPage(pageNum);
             });
+            $('#btnAddStamp').click(function(){
+                console.log("X Coordinate " + xCoordinate);
+                console.log("Y Coordinate " + yCoordinate);
+                console.log("Current Page Number = " + pageNum);
+
+                $.ajax({
+                    url:"{{ route('document.add.stamp',['document'=>$document->id]) }}",
+                    method:'POST',
+                    data:{
+                        'x_coordinate':xCoordinate,
+                        'y_coordinate':yCoordinate,
+                        'page_number':pageNum
+                    },
+                    success:function(dataresponse){
+                        console.log(dataresponse);
+                    }
+
+                })
+            })
 
 
             // $("#pdf-renderer").on('mousemove', function(e) {
